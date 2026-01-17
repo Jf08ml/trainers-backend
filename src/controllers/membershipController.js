@@ -1,7 +1,6 @@
 // controllers/membershipController.js
 import membershipService from "../services/membershipService.js";
 import sendResponse from "../utils/sendResponse.js";
-import { runMembershipCheck } from "../cron/membershipCheckJob.js";
 
 const membershipController = {
   /**
@@ -206,12 +205,12 @@ const membershipController = {
 
   /**
    * POST /api/cron/check-memberships
-   * Ejecutar verificación manual de membresías (para testing o cron externo)
+   * Ejecutar verificación manual de memberísas (para testing o cron externo)
+   * NOTA: Este endpoint ahora es un placeholder - la lógica de cron ha sido eliminada
    */
   runMembershipCheckManual: async (req, res) => {
     try {
-      const result = await runMembershipCheck();
-      return sendResponse(res, 200, result, "Verificación completada");
+      return sendResponse(res, 501, null, "Esta funcionalidad ha sido deshabilitada");
     } catch (error) {
       console.error("Error en verificación manual:", error);
       return sendResponse(res, 500, null, error.message);

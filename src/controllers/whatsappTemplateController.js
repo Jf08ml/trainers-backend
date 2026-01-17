@@ -28,7 +28,6 @@ const whatsappTemplateController = {
         scheduleAppointment: whatsappTemplates.getDefaultTemplate('scheduleAppointment'),
         scheduleAppointmentBatch: whatsappTemplates.getDefaultTemplate('scheduleAppointmentBatch'),
         recurringAppointmentSeries: whatsappTemplates.getDefaultTemplate('recurringAppointmentSeries'),
-        reminder: whatsappTemplates.getDefaultTemplate('reminder'),
         statusReservationApproved: whatsappTemplates.getDefaultTemplate('statusReservationApproved'),
         statusReservationRejected: whatsappTemplates.getDefaultTemplate('statusReservationRejected'),
         clientConfirmationAck: whatsappTemplates.getDefaultTemplate('clientConfirmationAck'),
@@ -54,11 +53,6 @@ const whatsappTemplateController = {
           content: customTemplates.recurringAppointmentSeries || defaultTemplates.recurringAppointmentSeries,
           isCustom: !!customTemplates.recurringAppointmentSeries,
           variables: ['{{names}}', '{{organization}}', '{{address}}', '{{employee}}', '{{appointmentsList}}', '{{cancellationLink}}'],
-        },
-        reminder: {
-          content: customTemplates.reminder || defaultTemplates.reminder,
-          isCustom: !!customTemplates.reminder,
-          variables: ['{{names}}', '{{count}}', '{{cita_pal}}', '{{agendada_pal}}', '{{date_range}}', '{{organization}}', '{{address}}', '{{services_list}}', '{{employee}}'],
         },
         statusReservationApproved: {
           content: customTemplates.statusReservationApproved || defaultTemplates.statusReservationApproved,
@@ -228,7 +222,6 @@ const whatsappTemplateController = {
       const validTypes = [
         'scheduleAppointment',
         'scheduleAppointmentBatch',
-        'reminder',
         'statusReservationApproved',
         'statusReservationRejected',
         'clientConfirmationAck',
@@ -337,7 +330,6 @@ const whatsappTemplateController = {
           scheduleAppointment: true,
           scheduleAppointmentBatch: true,
           recurringAppointmentSeries: true,
-          reminder: true,
           statusReservationApproved: false,
           statusReservationRejected: false,
           clientConfirmationAck: true,
@@ -350,7 +342,6 @@ const whatsappTemplateController = {
         scheduleAppointment: true,
         scheduleAppointmentBatch: true,
         recurringAppointmentSeries: true,
-        reminder: true,
         statusReservationApproved: false,
         statusReservationRejected: false,
         clientConfirmationAck: true,
@@ -381,7 +372,6 @@ const whatsappTemplateController = {
         'scheduleAppointment',
         'scheduleAppointmentBatch',
         'recurringAppointmentSeries',
-        'reminder',
         'statusReservationApproved',
         'statusReservationRejected',
         // 🆕 Nuevos tipos togglables

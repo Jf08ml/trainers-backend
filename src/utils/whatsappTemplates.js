@@ -65,27 +65,6 @@ Si necesitas ajustar horarios o cambiar algún servicio, *responde a este chat* 
 
 ¡Te esperamos en cada sesión!`,
 
-      reminder: `📅 ¡Hola, {{names}}!
-
-Recuerda que tienes {{count}} {{cita_pal}} {{agendada_pal}}.
-
-🗓️ Fecha: {{date_range}}
-📍 Lugar: {{organization}}
-📍 Dirección: {{address}}
-
-✨ Servicios:
-{{services_list}}
-
-👩‍💼 Te atenderá: {{employee}}
-
-Gestiona tu cita desde el siguiente enlace:
-{{manage_block}}
-
-Por favor confirma tu asistencia o cancela tu cita desde el enlace.
-Si necesitas ayuda, puedes responder a este mensaje.
-
-💖 ¡Te esperamos!`,
-
       statusReservationApproved: `¡Hola, {{names}}! 🎉
 
 Tu reserva para el {{date}} en {{organization}} ha sido *aprobada*.
@@ -257,21 +236,6 @@ ${list}
 
     return message;
   },
-
-  reminder: ({ names, date, organization, service, employee }) =>
-    `📅 ¡Hola, ${names}!
-
-Te recordamos que tienes una cita programada:
-
-🗓️ Fecha: ${date}
-📍 Lugar: ${organization}
-✨ Servicio: ${service}
-👩‍💼 Te atenderá: ${employee}
-
-Por favor confirma tu cita *respondiendo a este chat de WhatsApp*.
-Si no confirmas, podríamos asignar tu turno a otra persona en lista de espera.
-
-¡Nos vemos pronto!`,
 
   statusReservationApproved: ({ names, date, organization, service, cancellationLink }) => {
     let message = `¡Hola, ${names}! 🎉

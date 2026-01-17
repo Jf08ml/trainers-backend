@@ -2,11 +2,9 @@ import { Router } from "express";
 
 // Importa tus routers
 import clientRoutes from "./client";
-import appointmentRoutes from "./appointments";
 import serviceRoutes from "./services";
 import imagesRoutes from "./images";
 import employeeRoutes from "./employee";
-import advanceRoutes from "./advance";
 import roleRoutes from "./role";
 import organizationRoutes from "./organizationRoutes";
 import organizationRoutesPublic from "./organizationRoutesPublic";
@@ -14,17 +12,11 @@ import authRoutes from "./authRoutes";
 import subscriptionRoutes from "./subscriptionRoutes";
 import whatsappRoutes from "./whatsappRoutes";
 import whatsappTemplateRoutes from "./whatsappTemplateRoutes";
-import cronRoutes from "./cronRoutes";
-import reservationRoutes from "./reservation";
 import notificationRoutes from "./notification";
 import planRoutes from "./planRoutes";
 import paymentRoutes from "./paymentRoutes.js";
 import waRoutes from "./waRoutes";
-import reminderRoutes from "./reminderRoutes";
 import membershipRoutes from "./membershipRoutes";
-import scheduleRoutes from "./scheduleRoutes.js";
-import debugRoutes from "./debugRoutes.js";
-import publicRoutes from "./publicRoutes.js";
 import membershipBillingRoutes from "./membershipBillingRoutes.js";
 import campaignRoutes from "./campaignRoutes.js";
 import { organizationResolver } from "../middleware/organizationResolver";
@@ -90,12 +82,9 @@ router.get("/favicon.ico", organizationResolver, (req, res) => {
 
 // Rutas que requieren organizaciónResolver (ejemplo)
 router.use(organizationResolver, clientRoutes);
-router.use(organizationResolver, appointmentRoutes);
 router.use(organizationResolver, serviceRoutes);
 router.use(organizationResolver, imagesRoutes);
 router.use(organizationResolver, employeeRoutes);
-router.use(organizationResolver, advanceRoutes);
-router.use(organizationResolver, reservationRoutes);
 
 // organization-config (config visual) también depende del middleware
 router.use(organizationResolver, organizationRoutes);
@@ -107,16 +96,11 @@ router.use(authRoutes);
 router.use(subscriptionRoutes);
 router.use(whatsappRoutes);
 router.use("/whatsapp-templates", whatsappTemplateRoutes);
-router.use(cronRoutes);
 router.use(notificationRoutes);
 router.use("/plans", planRoutes);
 router.use("/payments", paymentRoutes);
 router.use("/memberships", membershipRoutes);
 router.use(waRoutes);
-router.use(reminderRoutes);
-router.use("/schedule", scheduleRoutes);
-router.use("/debug", debugRoutes);
-router.use("/public", publicRoutes);
 router.use("/billing", membershipBillingRoutes);
 router.use(campaignRoutes); // Campaign routes
 

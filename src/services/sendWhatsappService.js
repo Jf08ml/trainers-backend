@@ -60,68 +60,7 @@ const whatsappService = {
     return cleaned;
   },
 
-  /** ===================== TWILIO (opcional en servidor) ===================== */
-  async sendWhatsappReminder(phone, appointmentDetails) {
-    try {
-      const accountSid = process.env.TWILIO_ACCOUNT_SID;
-      const authToken = process.env.TWILIO_AUTH_TOKEN;
-      const client = require("twilio")(accountSid, authToken);
-
-      await client.messages.create({
-        contentSid: "HXc1cdd029c3eba4a1f303fd922ee74da6",
-        contentVariables: JSON.stringify({ ...appointmentDetails }),
-        from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
-        to: `whatsapp:+${this.normalizePhoneForWhatsapp(phone, 'CO')}`,
-      });
-      return { message: "Mensaje enviado correctamente" };
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  },
-
-  async sendWhatsappStatusReservationTwilo(status, phone, reservationDetails) {
-    try {
-      const accountSid = process.env.TWILIO_ACCOUNT_SID;
-      const authToken = process.env.TWILIO_AUTH_TOKEN;
-      const client = require("twilio")(accountSid, authToken);
-
-      await client.messages.create({
-        contentSid:
-          status === "approved"
-            ? "HX1b3c37e9450f9af80702eae7a01ecc41"
-            : "HX3c8a17fed3dc853f82d4eaabdb115857",
-        contentVariables: JSON.stringify({ ...reservationDetails }),
-        from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
-        to: `whatsapp:+${this.normalizePhoneForWhatsapp(phone, 'CO')}`,
-      });
-
-      return { message: "Mensaje enviado correctamente" };
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  },
-
-  async sendWhatsappScheduleAppointment(phone, appointmentDetails) {
-    try {
-      const accountSid = process.env.TWILIO_ACCOUNT_SID;
-      const authToken = process.env.TWILIO_AUTH_TOKEN;
-      const client = require("twilio")(accountSid, authToken);
-
-      await client.messages.create({
-        contentSid: "HX78a056237b71cb5f3232722cbf09b63d",
-        contentVariables: JSON.stringify({ ...appointmentDetails }),
-        from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
-        to: `whatsapp:+${this.normalizePhoneForWhatsapp(phone, 'CO')}`,
-      });
-
-      return { message: "Mensaje enviado correctamente" };
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  },
-  /** ======================================================================== */
-
-  /** ===================== Multi-sesión (wwebjs) ===================== */
+  /** ===================== Multi-sesión (wwebjs / Bayleys) ===================== */
 
   // Idempotente: asegura que la sesión exista en el backend
   async ensureSession(clientId) {

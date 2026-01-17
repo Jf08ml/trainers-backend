@@ -1,5 +1,4 @@
 import Employee from "../models/employeeModel.js";
-import Appointment from "../models/appointmentModel.js";
 import bcrypt from "bcryptjs";
 
 const employeeService = {
@@ -137,11 +136,6 @@ const employeeService = {
     const employee = await Employee.findById(id);
     if (!employee) {
       throw new Error("Empleado no encontrado");
-    }
-
-    const appointments = await Appointment.find({ employee: id });
-    if (appointments.length > 0) {
-      throw new Error("No puedes eliminar un empleado con citas asignadas");
     }
 
     await Employee.deleteOne({ _id: id });

@@ -7,8 +7,6 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import routes from "./routes/indexRoutes.js";
-import membershipCheckJob from "./cron/membershipCheckJob.js";
-import reminderJob from "./cron/reminderJob.js";
 
 const app = express();
 
