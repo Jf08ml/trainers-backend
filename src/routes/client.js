@@ -36,16 +36,13 @@ router.put("/clients/:id", clientController.updateClient);
 // Ruta para eliminar un cliente específico por ID
 router.delete("/clients/:id", clientController.deleteClient);
 
-// Ruta para registrar un servicio para un cliente
-router.post("/clients/:id/register-service", clientController.registerService);
-
-// Ruta para registrar un referido para un cliente
-router.post(
-  "/clients/:id/register-referral",
-  clientController.registerReferral
-);
-
 // Ruta para carga masiva de clientes desde Excel
 router.post("/clients/bulk-upload", clientController.bulkUploadClients);
+
+// Ruta para obtener el entrenador asignado de un cliente
+router.get("/clients/:id/assigned-trainer", clientController.getAssignedTrainer);
+
+// Ruta para obtener clientes asignados a un empleado
+router.get("/employees/:employeeId/assigned-clients", clientController.getClientsByAssignedEmployee);
 
 export default router;

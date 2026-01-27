@@ -108,38 +108,6 @@ const clientController = {
     }
   },
 
-  // Controlador para registrar un servicio a un cliente
-  registerService: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const client = await clientService.registerService(id);
-      sendResponse(
-        res,
-        200,
-        client,
-        "Servicio registrado exitosamente para el cliente"
-      );
-    } catch (error) {
-      sendResponse(res, 404, null, error.message);
-    }
-  },
-
-  // Controlador para registrar un referido a un cliente
-  registerReferral: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const client = await clientService.registerReferral(id);
-      sendResponse(
-        res,
-        200,
-        client,
-        "Referido registrado exitosamente para el cliente"
-      );
-    } catch (error) {
-      sendResponse(res, 404, null, error.message);
-    }
-  },
-
   // Controlador para carga masiva de clientes desde Excel
   bulkUploadClients: async (req, res) => {
     try {
@@ -154,13 +122,36 @@ const clientController = {
       }
 
       const results = await clientService.bulkCreateClients(clients, organizationId);
-      
+
       sendResponse(
         res,
         200,
         results,
         `Proceso completado: ${results.totalSuccess} éxitos, ${results.totalErrors} errores`
       );
+    } catch (error) {
+      sendResponse(res, 500, null, error.message);
+    }
+  },
+
+  // Controlador para obtener el entrenador asignado de un cliente
+  getAssignedTrainer: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const trainer = await clientService.getAssignedTrainer(id);
+      sendResponse(res, 200, trainer, "Entrenador asignado obtenido exitosamente");
+    } catch (error) {
+      sendResponse(res, 404, null, error.message);
+    }
+  },
+
+  // Controlador para obtener clientes asignados a un empleado
+  getClientsByAssignedEmployee: async (req, res) => {
+    const { employeeId } = req.params;
+    const { organizationId } = req.query;
+    try {
+      const clients = await clientService.getClientsByAssignedEmployee(employeeId, organizationId);
+      sendResponse(res, 200, clients, "Clientes asignados obtenidos exitosamente");
     } catch (error) {
       sendResponse(res, 500, null, error.message);
     }

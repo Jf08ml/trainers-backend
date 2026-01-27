@@ -26,6 +26,8 @@ const authController = {
           userType: user.userType,
           organizationId: user.organizationId,
           userPermissions: user.userPermissions,
+          name: user.name,
+          email: user.email,
         },
         "Inicio de sesión exitoso"
       );

@@ -2,7 +2,6 @@ import { Router } from "express";
 
 // Importa tus routers
 import clientRoutes from "./client";
-import serviceRoutes from "./services";
 import imagesRoutes from "./images";
 import employeeRoutes from "./employee";
 import roleRoutes from "./role";
@@ -19,6 +18,11 @@ import waRoutes from "./waRoutes";
 import membershipRoutes from "./membershipRoutes";
 import membershipBillingRoutes from "./membershipBillingRoutes.js";
 import campaignRoutes from "./campaignRoutes.js";
+import exerciseRoutes from "./exercise.js";
+import trainingCatalogsRoutes from "./trainingCatalogs.js";
+import trainingSessionsRoutes from "./trainingSessions.js";
+import weeklyPlansRoutes from "./weeklyPlans.js";
+import formRoutes from "./formRoutes.js";
 import { organizationResolver } from "../middleware/organizationResolver";
 
 const router = Router();
@@ -82,9 +86,13 @@ router.get("/favicon.ico", organizationResolver, (req, res) => {
 
 // Rutas que requieren organizaciónResolver (ejemplo)
 router.use(organizationResolver, clientRoutes);
-router.use(organizationResolver, serviceRoutes);
 router.use(organizationResolver, imagesRoutes);
 router.use(organizationResolver, employeeRoutes);
+router.use(organizationResolver, exerciseRoutes);
+router.use(organizationResolver, trainingCatalogsRoutes);
+router.use(organizationResolver, trainingSessionsRoutes);
+router.use(organizationResolver, weeklyPlansRoutes);
+router.use(organizationResolver, formRoutes);
 
 // organization-config (config visual) también depende del middleware
 router.use(organizationResolver, organizationRoutes);

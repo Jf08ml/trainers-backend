@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const clientSchema = new mongoose.Schema(
   {
@@ -10,6 +11,10 @@ const clientSchema = new mongoose.Schema(
       type: String,
       required: false,
       // unique: true,
+    },
+    password: {
+      type: String,
+      required: false, // Opcional inicialmente, requerido si el cliente quiere login
     },
     phoneNumber: {
       type: String,
@@ -26,30 +31,6 @@ const clientSchema = new mongoose.Schema(
       required: false, // ISO2: CO, MX, PE, etc.
       maxlength: 2,
     },
-    servicesTaken: {
-      type: Number,
-      default: 0,
-    },
-    referralsMade: {
-      type: Number,
-      default: 0,
-    },
-    hasServiceDiscount: {
-      type: Boolean,
-      default: false,
-    },
-    serviceDiscountDetails: {
-      type: String,
-      default: "",
-    },
-    hasReferralBenefit: {
-      type: Boolean,
-      default: false,
-    },
-    referralBenefitDetails: {
-      type: String,
-      default: "",
-    },
     organizationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
@@ -58,6 +39,12 @@ const clientSchema = new mongoose.Schema(
     birthDate: {
       type: Date,
       required: false,
+    },
+    // Entrenador/empleado asignado al cliente
+    assignedEmployeeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee",
+      default: null,
     },
   },
   {
@@ -78,51 +65,26 @@ clientSchema.index(
   }
 );
 
-// Método para incrementar los servicios tomados
-clientSchema.methods.incrementServices = function () {
-  this.servicesTaken += 1;
-
-  // Otorgar un descuento por cada 7 servicios tomados
-  if (this.servicesTaken > 7) {
-    this.hasServiceDiscount = true;
-    this.serviceDiscountDetails = "Descuento especial por 7 servicios tomados";
-    this.servicesTaken = 1; // Reiniciar el conteo de servicios tomados a 1
-  } else {
-    this.hasServiceDiscount = false;
-    this.serviceDiscountDetails = "";
+// 🔐 Middleware para hashear la contraseña antes de guardar
+clientSchema.pre("save", async function (next) {
+  // Solo hashear si el password fue modificado (o es nuevo)
+  if (!this.isModified("password")) {
+    return next();
   }
 
-  return this.save();
-};
-
-// Método para incrementar los referidos realizados
-clientSchema.methods.incrementReferrals = function () {
-  this.referralsMade += 1;
-  this.servicesTaken += 1; // Cada referido cuenta también como un servicio
-
-  // Otorgar un beneficio por cada 5 referidos realizados
-  if (this.referralsMade > 5) {
-    this.hasReferralBenefit = true;
-    this.referralBenefitDetails =
-      "Beneficio especial por 5 referidos realizados";
-    this.referralsMade = 1; // Reiniciar el conteo de referidos realizados a 1
+  // Si hay password, hashearlo
+  if (this.password) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+      next();
+    } catch (error) {
+      next(error);
+    }
   } else {
-    this.hasReferralBenefit = false;
-    this.referralBenefitDetails = "";
+    next();
   }
-
-  // También revisar si los servicios tomados alcanzan un múltiplo de 7
-  if (this.servicesTaken > 7) {
-    this.hasServiceDiscount = true;
-    this.serviceDiscountDetails = "Descuento especial por 7 servicios tomados";
-    this.servicesTaken = 1; // Reiniciar el conteo de servicios tomados a 1
-  } else {
-    this.hasServiceDiscount = false;
-    this.serviceDiscountDetails = "";
-  }
-
-  return this.save();
-};
+});
 
 const Client = mongoose.model("Client", clientSchema);
 

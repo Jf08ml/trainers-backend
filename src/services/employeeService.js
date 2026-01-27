@@ -9,7 +9,6 @@ const employeeService = {
       position,
       email,
       phoneNumber,
-      services,
       organizationId,
       password,
       isActive,
@@ -25,7 +24,6 @@ const employeeService = {
       position,
       email,
       phoneNumber,
-      services,
       organizationId,
       password: hashedPassword,
       isActive,
@@ -42,17 +40,13 @@ const employeeService = {
 
   // Obtener todos los empleados
   getEmployees: async () => {
-    return await Employee.find()
-      .select("-password")
-      .populate("services")
-      .exec();
+    return await Employee.find().select("-password").exec();
   },
 
   // Obtener empleados por organizationId
   getEmployeesByOrganizationId: async (organizationId) => {
     return await Employee.find({ organizationId })
       .select("-password")
-      .populate("services")
       .sort({ order: 1, _id: 1 }) // Ordenar primero por 'order' ascendente, luego por '_id' como respaldo
       .exec();
   },
@@ -86,7 +80,6 @@ const employeeService = {
       position,
       email,
       phoneNumber,
-      services,
       organizationId,
       password,
       isActive,
@@ -106,7 +99,6 @@ const employeeService = {
     employee.email = email !== undefined ? email : employee.email;
     employee.phoneNumber =
       phoneNumber !== undefined ? phoneNumber : employee.phoneNumber;
-    employee.services = services !== undefined ? services : employee.services;
     employee.organizationId =
       organizationId !== undefined ? organizationId : employee.organizationId;
     employee.isActive = isActive !== undefined ? isActive : employee.isActive;

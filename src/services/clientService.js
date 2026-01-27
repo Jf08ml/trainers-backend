@@ -1,11 +1,13 @@
 import Client from "../models/clientModel.js";
 import Organization from "../models/organizationModel.js";
+import Employee from "../models/employeeModel.js";
 import { normalizePhoneNumber } from "../utils/phoneUtils.js";
+import formResponseService from "./formResponseService.js";
 
 const clientService = {
   // Crear un nuevo cliente
   createClient: async (clientData) => {
-    const { name, email, phoneNumber, organizationId, birthDate } = clientData;
+    const { name, email, phoneNumber, password, organizationId, birthDate, assignedEmployeeId, initialFormId } = clientData;
 
     // 🌍 Obtener país por defecto de la organización
     const org = await Organization.findById(organizationId).select('default_country');
@@ -17,19 +19,47 @@ const clientService = {
       throw new Error(phoneResult.error);
     }
 
+    // Validar que el empleado asignado pertenece a la organización
+    if (assignedEmployeeId) {
+      const employee = await Employee.findOne({ _id: assignedEmployeeId, organizationId });
+      if (!employee) {
+        throw new Error("El empleado asignado no pertenece a esta organización");
+      }
+    }
+
     // Crear y guardar el nuevo cliente (índice único previene duplicados)
     const newClient = new Client({
       name,
       email,
+      password, // Opcional - si se proporciona, permitirá login de cliente
       phoneNumber: phoneResult.phone_national_clean, // 🆕 Solo dígitos locales, sin espacios ni guiones
       phone_e164: phoneResult.phone_e164, // Con código de país en formato E.164
       phone_country: phoneResult.phone_country,
       organizationId,
       birthDate,
+      assignedEmployeeId: assignedEmployeeId || null,
     });
-    
+
     try {
-      return await newClient.save();
+      const savedClient = await newClient.save();
+
+      // Si se proporcionó un formulario inicial, crear el FormResponse pendiente
+      if (initialFormId) {
+        try {
+          await formResponseService.createFormResponse({
+            formTemplateId: initialFormId,
+            weeklyPlanId: null, // Formulario inicial no tiene plan asociado
+            clientId: savedClient._id,
+            organizationId,
+            createdByModel: "System",
+          });
+        } catch (formError) {
+          console.error("Error creating initial form response:", formError.message);
+          // No fallar la creación del cliente por error en el formulario
+        }
+      }
+
+      return savedClient;
     } catch (error) {
       // Capturar error de duplicado del índice único de MongoDB
       if (error.code === 11000) {
@@ -100,7 +130,7 @@ const clientService = {
 
   // Actualizar un cliente
   updateClient: async (id, clientData) => {
-    const { name, email, phoneNumber, organizationId, birthDate } = clientData;
+    const { name, email, phoneNumber, password, organizationId, birthDate, assignedEmployeeId } = clientData;
     const client = await Client.findById(id);
 
     if (!client) {
@@ -141,8 +171,27 @@ const clientService = {
     client.organizationId =
       organizationId !== undefined ? organizationId : client.organizationId;
 
+    // Solo actualizar password si se proporciona un valor no vacío
+    if (password !== undefined && password.trim() !== '') {
+      client.password = password;
+    }
+
     // Permitir que birthDate sea null
     client.birthDate = birthDate !== undefined ? birthDate : client.birthDate;
+
+    // Actualizar empleado asignado
+    if (assignedEmployeeId !== undefined) {
+      if (assignedEmployeeId === null || assignedEmployeeId === '') {
+        client.assignedEmployeeId = null;
+      } else {
+        // Validar que el empleado pertenece a la organización
+        const employee = await Employee.findOne({ _id: assignedEmployeeId, organizationId: client.organizationId });
+        if (!employee) {
+          throw new Error("El empleado asignado no pertenece a esta organización");
+        }
+        client.assignedEmployeeId = assignedEmployeeId;
+      }
+    }
 
     try {
       return await client.save();
@@ -164,24 +213,6 @@ const clientService = {
 
     await Client.deleteOne({ _id: id });
     return { message: "Cliente eliminado correctamente" };
-  },
-
-  // Registrar un servicio para un cliente
-  registerService: async (id) => {
-    const client = await Client.findById(id);
-    if (!client) {
-      throw new Error("Cliente no encontrado");
-    }
-    return await client.incrementServices();
-  },
-
-  // Registrar un referido para un cliente
-  registerReferral: async (id) => {
-    const client = await Client.findById(id);
-    if (!client) {
-      throw new Error("Cliente no encontrado");
-    }
-    return await client.incrementReferrals();
   },
 
   // Carga masiva de clientes desde Excel
@@ -265,6 +296,35 @@ const clientService = {
 
     console.log(`[bulkCreateClients] Completado: ${results.totalSuccess} éxitos, ${results.totalErrors} errores`);
     return results;
+  },
+
+  // Obtener el entrenador asignado de un cliente
+  getAssignedTrainer: async (clientId) => {
+    const client = await Client.findById(clientId)
+      .populate({
+        path: 'assignedEmployeeId',
+        select: 'names email phoneNumber phone_e164 profilePhoto'
+      })
+      .lean();
+
+    if (!client) {
+      throw new Error("Cliente no encontrado");
+    }
+
+    return client.assignedEmployeeId || null;
+  },
+
+  // Obtener clientes asignados a un empleado
+  getClientsByAssignedEmployee: async (employeeId, organizationId) => {
+    const query = { assignedEmployeeId: employeeId };
+    if (organizationId) {
+      query.organizationId = organizationId;
+    }
+
+    return await Client.find(query)
+      .select("_id name phoneNumber phone_e164 email birthDate")
+      .sort({ name: 1 })
+      .lean();
   },
 };
 
