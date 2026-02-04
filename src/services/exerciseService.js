@@ -7,7 +7,6 @@ const exerciseService = {
       name,
       description,
       muscleGroups,
-      difficulty,
       equipment,
       videoUrl,
       imageUrl,
@@ -28,7 +27,6 @@ const exerciseService = {
       name: name.trim(),
       description: description?.trim() || "",
       muscleGroups: muscleGroups || [],
-      difficulty: difficulty || "intermedio",
       equipment: equipment || [],
       videoUrl: videoUrl?.trim() || "",
       imageUrl: imageUrl?.trim() || "",
@@ -105,7 +103,6 @@ const exerciseService = {
       name,
       description,
       muscleGroups,
-      difficulty,
       equipment,
       videoUrl,
       imageUrl,
@@ -117,7 +114,6 @@ const exerciseService = {
     if (name !== undefined) exercise.name = name.trim();
     if (description !== undefined) exercise.description = description.trim();
     if (muscleGroups !== undefined) exercise.muscleGroups = muscleGroups;
-    if (difficulty !== undefined) exercise.difficulty = difficulty;
     if (equipment !== undefined) exercise.equipment = equipment;
     if (videoUrl !== undefined) exercise.videoUrl = videoUrl.trim();
     if (imageUrl !== undefined) exercise.imageUrl = imageUrl.trim();

@@ -23,6 +23,8 @@ import trainingCatalogsRoutes from "./trainingCatalogs.js";
 import trainingSessionsRoutes from "./trainingSessions.js";
 import weeklyPlansRoutes from "./weeklyPlans.js";
 import formRoutes from "./formRoutes.js";
+import dishRoutes from "./dish.js";
+import nutritionPlanRoutes from "./nutritionPlan.js";
 import { organizationResolver } from "../middleware/organizationResolver";
 
 const router = Router();
@@ -93,6 +95,8 @@ router.use(organizationResolver, trainingCatalogsRoutes);
 router.use(organizationResolver, trainingSessionsRoutes);
 router.use(organizationResolver, weeklyPlansRoutes);
 router.use(organizationResolver, formRoutes);
+router.use(organizationResolver, dishRoutes);
+router.use(organizationResolver, nutritionPlanRoutes);
 
 // organization-config (config visual) también depende del middleware
 router.use(organizationResolver, organizationRoutes);

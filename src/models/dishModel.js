@@ -1,29 +1,34 @@
 import mongoose from "mongoose";
 
-const exerciseSchema = new mongoose.Schema(
+const dishSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
       trim: true,
     },
-    description: {
+    category: {
+      type: String,
+      required: true,
+      enum: ["desayuno", "merienda_am", "almuerzo", "merienda_pm", "cena"],
+    },
+    ingredients: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    preparation: {
       type: String,
       trim: true,
     },
-    muscleGroups: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "MuscleGroup",
-      },
-    ],
-    equipment: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Equipment",
-      },
-    ],
-    videoUrl: {
+    nutritionalInfo: {
+      calories: { type: Number, default: 0 },
+      carbohydrates: { type: Number, default: 0 },
+      fats: { type: Number, default: 0 },
+      proteins: { type: Number, default: 0 },
+    },
+    notes: {
       type: String,
       trim: true,
     },
@@ -69,14 +74,14 @@ const exerciseSchema = new mongoose.Schema(
   }
 );
 
-// Composite unique index - prevents duplicate exercise names per organization
-exerciseSchema.index(
-  { name: 1, organizationId: 1 },
+// Composite unique index - prevents duplicate dish name+category per organization
+dishSchema.index(
+  { name: 1, category: 1, organizationId: 1 },
   {
     unique: true,
-    name: "unique_exercise_name_per_organization",
+    name: "unique_dish_name_category_per_organization",
   }
 );
 
-const Exercise = mongoose.model("Exercise", exerciseSchema);
-export default Exercise;
+const Dish = mongoose.model("Dish", dishSchema);
+export default Dish;
